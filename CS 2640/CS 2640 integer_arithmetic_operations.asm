@@ -23,7 +23,7 @@ main:
 	la $a0, prompt1	#tells assembler to print string stored in prompt1
 	syscall		#tells the assembler to run the above commands
 	#get the first integer
-	li $v0 5	#tells assembler to read in the user integer
+	li $v0, 5	#tells assembler to read in the user integer
 	syscall		#assembler runs the above command
 	move $t0, $v0	#moves result from user integer($v0) into $t0
 
