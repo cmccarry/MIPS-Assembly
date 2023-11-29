@@ -1,17 +1,17 @@
 #Connor McCarry
 #CS 2640.04
-#27 November 2023
+#3 December 2023
 #Program- File Handling
 
 #Objectives
-	#1) open 'gradeItems.txt'
-	#2) read 'gradeItems.txt' and print contents to user
+	#1) open 'gradedItems.txt'
+	#2) read 'gradedItems.txt' and print contents to user
 	#3) write contents to new file
 	#4) close files
 
 .data
 inputFileName: .asciiz "gradedItems.txt"
-outputFileName: .asciiz "CS2640_04_graded.txt"
+outputFileName: .asciiz "cs2640items.txt"
 buffer: .space 175
 
 .text
@@ -28,7 +28,7 @@ main:
 	li $v0, 14
 	move $a0, $s0
 	la $a1, buffer
-	li $a2, 174
+	li $a2, 173
 	syscall
 	
 	#print out file contents
@@ -37,7 +37,7 @@ main:
 	syscall
 	
 	#write buffer contents to new file
-	#new file name: CS2640_04_graded.txt
+	#new file name: cs2640items.txt
 	li $v0, 13
 	la $a0, outputFileName
 	li $a1, 1
