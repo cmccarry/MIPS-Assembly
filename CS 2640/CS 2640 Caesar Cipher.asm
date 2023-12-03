@@ -1,35 +1,38 @@
-#Caesar cipher
+#Connor McCarry, Long Hoang, Alvaro Miranda
+#CS 2640.04
+#10 December 2023
+#Caesar Cipher Program
 
-#print string macro
+# macro to print string
 .macro printString(%strings)
 	.data 
 	string: .asciiz %strings
-	
 	.text
 	li $v0, 4
 	la $a0, string
 	syscall
 .end_macro
 
+# macro to get user message and key value
 .macro getTextToProcess
-	#read the user input
+	# read the user input
 	la $a0, buffer
-	la $a1, 40 # read 40 charaters
+	la $a1, 40
 	li $v0, 8
 	syscall
 	
 	la $t1, ($a0)
 	li $t2, 0 # string length
 	
-	#read the key
+	# read the key
 	printString("\nEnter the key value: ")
 	li $v0, 5
 	syscall
-	#store key value
+	#store key value in $t3
 	move $t3, $v0
 .end_macro 
 
-
+# macro to print each encoded/decoded character
 .macro printChar
  	li $v0,11 			
  	syscall
@@ -42,32 +45,19 @@
 .end_macro 
 
 .data
-
 buffer: .space 20
 buff: .space 40
 
 .text
-
 main:
-
-#t0: load option E,D
-#t1: entered string
-#t2: string length
-#t3: key value
-#t4 : letter to decode, encode
-#t5: balance value 
-#t6: in decrypt process
-
-
-#t8: classify value
-
-#cua ng ta - cua minh
-#t2 - t0
-#t0 - t1
-#t1 - t2 
-#t3 - t3
-#t4 - t4
-#t5 - t5
+	#t0: load option E,D
+	#t1: entered string
+	#t2: string length
+	#t3: key value
+	#t4: letter to decode, encode
+	#t5: balance value 
+	#t6: in decrypt process
+	#t8: classify value
 
 init:
 	#Encryption or Decryption 
@@ -75,29 +65,28 @@ init:
 	
 	#read the user input
 	la $a0, buffer
-	la $a1, 5 # read 5 charaters
+	la $a1, 5 # read max 5 charaters
 	li $v0, 8
 	syscall
 	
-	lb $t0, 0($a0) #load the letter
+	lb $t0, 0($a0) # load the letter choice into $t0
 	
-	# for option E
+	# for option Encrypt
 	beq $t0, 69, EncryptProcess
-	#for option D
+	# for option Decrypt
 	beq $t0, 68, DecryptProcess
-	#Invalid keyword --> reprompt
+	# Invalid keyword --> reprompt
 	printString("\nInvalid Input. Please re-enter: \n")
 	j init
 	
 EncryptProcess:
 	printString("\nEnter Text to encode: ")
-	
 	getTextToProcess
 	
 	j loadingChar
 
 loadingChar:
-	#load each charater
+	#load each charater into $t4
 	lb $t4, 0($t1)
 	beq $t4, 10, exit #exit if reaches the end (\n)
 	beqz $t4, exit #exit if reaches the end
@@ -106,7 +95,6 @@ loadingChar:
 	
 DecryptProcess:
 	printString("\nEnter Text to decode: ")
-	
 	getTextToProcess
 	
 	j loadingChar
@@ -138,27 +126,63 @@ notLower:
  	li $t8, 0		
  	
  	j classify
- 	
+ 		
 classify:
 	beq $t8, 1, isLower #--> classify lowercase
 	beq $t8, 0, isUpper #--> classify uppercase
 	move $a0, $t4 #if not upper nor lower
 	j printCrypt
 
+
+# Classify checks
 isLower:
-	# for E
-	beq $t0, 69, encryptLower
-	#for D
-	beq $t0, 68, decryptLower
-
-isUpper:
-
 	# for option E
-	beq $t0, 69, encryptUpper
-	#for option D
+	beq $t0, 69, encryptLowerCheck
+	# for option D
+	beq $t0, 68, decryptLowerCheck
+
+encryptLowerCheck:
+	blt $t3, 0, encryptLowerFix
+	j encryptLower
+	
+encryptLowerFix:
+	mul $t3, $t3, -1
+	li $t0, 68
+	j decryptLower
+	
+decryptLowerCheck:
+	bgt $t3, 0, decryptLowerFix
+	j decryptLower
+	
+decryptLowerFix:
+	li $t0, 69
+	j encryptLower
+	
+isUpper:
+	# for option E
+	beq $t0, 69, encryptUpperCheck
+	# for option D
 	beq $t0, 68, decryptUpper
 
+encryptUpperCheck:
+	blt $t3, 0, encryptUpperFix
+	j encryptUpper
 
+encryptUpperFix:
+	mul $t3, $t3, -1
+	li $t0, 68
+	j decryptUpper
+	
+decryptUpperCheck:
+	bgt $t3, 0, decryptUpperFix
+	j decryptUpper
+	
+decryptUpperFix:
+	li $t0, 69
+	j encryptUpper
+	
+	
+	
 #Encryption process
 encryptLower:
 	#encrypt lower case: ch = (ch - 'a' + key) % 26 + 'a';
@@ -179,7 +203,6 @@ encryptUpper:
  	mfhi $a0
  	addi $a0, $a0, 65
  	j printCrypt
- 	
 
 #Decryption process:
 decryptLower:
@@ -205,7 +228,6 @@ decryptUpper:
  	addi $a0, $a0, 65 # + 'A'
 
  	j printCrypt
-
 
 printCrypt:
 	printChar
