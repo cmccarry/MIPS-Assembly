@@ -99,6 +99,8 @@ DecryptProcess:
 	
 	j loadingChar
 	
+	
+	
 #Classify section
 checkLower:
 	#if the character is not lower case nor upper case
@@ -133,53 +135,18 @@ classify:
 	move $a0, $t4 #if not upper nor lower
 	j printCrypt
 
-
 # Classify checks
 isLower:
 	# for option E
-	beq $t0, 69, encryptLowerCheck
+	beq $t0, 69, encryptLower
 	# for option D
-	beq $t0, 68, decryptLowerCheck
-
-encryptLowerCheck:
-	blt $t3, 0, encryptLowerFix
-	j encryptLower
-	
-encryptLowerFix:
-	mul $t3, $t3, -1
-	li $t0, 68
-	j decryptLower
-	
-decryptLowerCheck:
-	bgt $t3, 0, decryptLowerFix
-	j decryptLower
-	
-decryptLowerFix:
-	li $t0, 69
-	j encryptLower
+	beq $t0, 68, decryptLower
 	
 isUpper:
 	# for option E
-	beq $t0, 69, encryptUpperCheck
+	beq $t0, 69, encryptUpper
 	# for option D
 	beq $t0, 68, decryptUpper
-
-encryptUpperCheck:
-	blt $t3, 0, encryptUpperFix
-	j encryptUpper
-
-encryptUpperFix:
-	mul $t3, $t3, -1
-	li $t0, 68
-	j decryptUpper
-	
-decryptUpperCheck:
-	bgt $t3, 0, decryptUpperFix
-	j decryptUpper
-	
-decryptUpperFix:
-	li $t0, 69
-	j encryptUpper
 	
 	
 	
@@ -203,6 +170,7 @@ encryptUpper:
  	mfhi $a0
  	addi $a0, $a0, 65
  	j printCrypt
+ 	
 
 #Decryption process:
 decryptLower:
